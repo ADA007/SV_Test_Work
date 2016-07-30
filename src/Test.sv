@@ -1,22 +1,25 @@
-`timescale 1ns/1fs
+  
 
-program Test_Program (A_B_req_if UI);
+  class testt extends uvm_test;
+  
+    `uvm_component_utils(testt)
+    
+    a_b_monitor a_b_mon;
+    a_b_driver a_b_drv;
 
-	`include "./src/A_B_Monitor.sv"
-	`include "./src/A_B_Driver_DUT.sv"
+  function new(string name, uvm_component parent);
+      super.new(name, parent);
+    endfunction
 
-	a_b_monitor a_b_mon = new(UI.iUVC_B);
-	a_b_driver a_b_drv = new(UI.DUT_A);
+    function void build_phase(uvm_phase phase);
+      a_b_drv = a_b_driver::type_id::create("a_b_drv", this);
+      a_b_mon = a_b_monitor::type_id::create("a_b_mon", this);
+    endfunction
+    
+    task run_phase(uvm_phase phase);
+      phase.raise_objection(this);
 
-	initial begin
-		#10;
-		$display ("@%0d : Start test", $time);
-		fork
-			a_b_mon.monitoring();
-			a_b_drv.make_transaction(12'h55);
-		join_any;
-		$display ("@%0d : Stop test", $time);
-		$finish;
-	end
-
-endprogram
+      //phase.drop_objection(this);
+    endtask
+     
+  endclass: testt

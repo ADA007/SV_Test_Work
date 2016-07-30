@@ -8,7 +8,8 @@ FILE_SRC := /home/ada/SV_Test_Work/task_1/src/*
 
 TARGET := ${FILE_SRC}
 
-NCSIM = ${INCICIVE_INST_DIR}/irun -sv -v93 -64bit -logfile ncvlog.log -errormax 15 -update -linedebug -incdir ./src
+NCSIM = ${INCICIVE_INST_DIR}/irun -sv -v93 -64bit -logfile ncvlog.log -linedebug -errormax 15 -update  -incdir ./src -uvm -uvmnoautocompile -uvmnocdnsextra +UVM_NO_RELNOTES 
+#+UVM_CONFIG_DB_TRACE   
 
 NCSIM_GUI = ${NCSIM} -gui -input restore.tcl
 
