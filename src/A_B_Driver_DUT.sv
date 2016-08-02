@@ -1,3 +1,4 @@
+
 `include "uvm_macros.svh"
 `include "uvm_pkg.sv"
 import uvm_pkg::*;
@@ -40,7 +41,7 @@ class a_b_driver extends uvm_driver;
         reset_outputs();
         @(posedge A_B_req_if_vi.clk);
         //make_transaction(12'h555);
-        make_transaction(12'b00000101010Z);
+        make_transaction(12'b00010101010Z);
     endtask: run_phase
 
 endclass : a_b_driver

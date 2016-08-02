@@ -1,4 +1,3 @@
-`timescale 1ns/1fs
 
 interface A_B_req_if(input bit clk); 
 
