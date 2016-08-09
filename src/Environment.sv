@@ -6,14 +6,23 @@ class a_b_environment extends uvm_env;
 
     `uvm_component_utils(a_b_environment)
     
-    a_b_agent agent;
+    agent_a agnt_a;
+    agent_b agnt_b;
+    scoreboard scb;
 
     function new(string name, uvm_component parent);
       super.new(name, parent);
     endfunction
     
     function void build_phase(uvm_phase phase);
-      agent = a_b_agent::type_id::create("agent", this);
+      agnt_a = agent_a::type_id::create("agnt_a", this);
+      agnt_b = agent_b::type_id::create("agnt_b", this);
+      scb = scoreboard::type_id::create("scb", this);
+    endfunction
+
+    // connect mon port to scoreboard port thorugh agent_b
+    virtual function void connect();
+      agnt_b.analysis_port.connect(scb.analysis_mon_port);
     endfunction
 
  endclass

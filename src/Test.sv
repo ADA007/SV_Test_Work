@@ -17,9 +17,10 @@ class testt extends uvm_test;
     endfunction
     
     task run_phase(uvm_phase phase);
+      this.print();
       phase.raise_objection(this);
-
-      //phase.drop_objection(this);
+      #100;
+      phase.drop_objection(this);
     endtask
      
 endclass: testt
