@@ -1,7 +1,8 @@
 
-`include "uvm_macros.svh"
-`include "uvm_pkg.sv"
+
+//`include "uvm_pkg.sv"
 import uvm_pkg::*;
+`include "uvm_macros.svh"
 import struct_pkg::*;
 
 class a_driver extends uvm_driver;
@@ -10,6 +11,8 @@ class a_driver extends uvm_driver;
 
     // A_B_req_if Interface (A_Driver side)
     virtual A_B_req_if A_B_req_if_vi;
+
+    req_pkt req_pk = new();
 
     function new(string name, uvm_component parent);
       super.new(name, parent);
@@ -27,14 +30,13 @@ class a_driver extends uvm_driver;
         A_B_req_if_vi.clocking_block_drv_a.Address <= 0;
     endtask : reset_outputs
 
-    task make_transaction (logic [11:0] addr_12);
-        `uvm_info( "A_DRIVER", $sformatf(" Drive_if with data = 0x%0h \n", addr_12), UVM_LOW );
+    task make_transaction (req_pkt req_pkt_fields);
+        `uvm_info( "A_DRIVER", $sformatf(" Drive_if with data = 0x%0h \n", req_pkt_fields.address), UVM_LOW );
         A_B_req_if_vi.clocking_block_drv_a.Valid_Addr <= 1;
-        A_B_req_if_vi.clocking_block_drv_a.Address <= addr_12;
+        A_B_req_if_vi.clocking_block_drv_a.Address <= req_pkt_fields.address;
         repeat(2) @A_B_req_if_vi.clocking_block_drv_a;
         reset_outputs();
-        #100;
-        $finish;
+
     endtask : make_transaction
 
     task run_phase(uvm_phase phase);
@@ -42,7 +44,15 @@ class a_driver extends uvm_driver;
         reset_outputs();
         @(posedge A_B_req_if_vi.clk);
         //make_transaction(12'h555);
-        make_transaction(12'b00010101010Z);
+        repeat (5) begin
+            if (!req_pk.randomize() ) begin //Data randomisation
+                `uvm_warning("RNDFLD", "Randomization failed for req_pk")
+            end
+            make_transaction(req_pk);
+            //make_transaction(12'b00010101010Z);
+            repeat(20) @(posedge A_B_req_if_vi.clk); // Wait 20 cycles of clock before next request
+        end
+        $finish;
     endtask: run_phase
 
 endclass : a_driver

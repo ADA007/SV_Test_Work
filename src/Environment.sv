@@ -1,6 +1,7 @@
   
-`include "uvm_pkg.sv"
+//`include "uvm_pkg.sv"
 import uvm_pkg::*;
+`include "uvm_macros.svh"
 
 class a_b_environment extends uvm_env;
 
@@ -22,7 +23,7 @@ class a_b_environment extends uvm_env;
 
     // connect mon port to scoreboard port thorugh agent_b
     virtual function void connect();
-      agnt_b.analysis_port.connect(scb.analysis_mon_port);
+      agnt_b.b_side_analysis_port.connect(scb.b_side_analysis_mon_port);
     endfunction
 
  endclass

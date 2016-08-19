@@ -1,17 +1,23 @@
-`include "uvm_macros.svh"
-`include "uvm_pkg.sv"
+
+//`include "uvm_pkg.sv"
 import uvm_pkg::*;
+`include "uvm_macros.svh"
 import struct_pkg::*;
 
 class b_driver extends uvm_driver #(resp_pkt);
 
   `uvm_component_utils(b_driver)
 
+  uvm_analysis_imp #(req_pkt, b_driver) b_side_analysis_mon_port;
+  resp_pkt pkt = new;
+  event e1;
+
   // A_B_req_if Interface (B_Driver side)
   virtual A_B_req_if A_B_req_if_vi;
 
   function new(string name, uvm_component parent);
       super.new(name, parent);
+      b_side_analysis_mon_port = new("b_side_analysis_mon_port", this);
     endfunction
 
   function void build_phase(uvm_phase phase);
@@ -26,24 +32,32 @@ class b_driver extends uvm_driver #(resp_pkt);
         A_B_req_if_vi.clocking_block_drv_b.Data <= 0;
    endtask : reset_outputs
 
-   task make_response (logic [23:0] data_24);
-        `uvm_info( "B_DRIVER", $sformatf(" Drive_if with data = 0x%0h \n", data_24), UVM_LOW );
+   task make_response (resp_pkt resp_pkt_fields);
+        `uvm_info( "B_DRIVER", $sformatf(" Drive_if with data = 0x%0h with delay = %0d \n", resp_pkt_fields.data, resp_pkt_fields.delay_time), UVM_LOW );
+
+        repeat(resp_pkt_fields.delay_time) @A_B_req_if_vi.clocking_block_drv_b; //Wait random cycle number before response
         A_B_req_if_vi.clocking_block_drv_b.Valid_Data <= 1;
-        A_B_req_if_vi.clocking_block_drv_b.Data <= data_24;
-        repeat(2) @A_B_req_if_vi.clocking_block_drv_b;
+        A_B_req_if_vi.clocking_block_drv_b.Data <= resp_pkt_fields.data;
+        repeat(1) @A_B_req_if_vi.clocking_block_drv_b;
         reset_outputs();
-        $finish;
+
    endtask : make_response
 
+  function void write (req_pkt pkt_req);
+    -> e1; //Trigg event for response
+  endfunction
+
   task run_phase(uvm_phase phase);
-    resp_pkt resp_pk;
+
     while (1) begin
-      `uvm_info( "B_DRIVER", $sformatf(" Response with data = 0x%0h \n", 8'h11), UVM_LOW );
-      seq_item_port.get_next_item(resp_pk);
-      `uvm_info( "B_DRIVER", $sformatf(" Response with data = 0x%0h \n", 8'h22), UVM_LOW );
-      //make_response(req.data);
-    //  #10;
-      seq_item_port.item_done();
+     
+      wait(e1.triggered); //Wait request transaction
+      if (!pkt.randomize()  with {pkt.delay_time inside {[1:10]};} ) begin 
+        `uvm_warning("RNDFLD", "Randomization failed for resp_pkt")
+      end
+
+      make_response(pkt);
+      
     end
 
   endtask: run_phase

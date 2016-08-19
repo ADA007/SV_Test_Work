@@ -1,5 +1,6 @@
+import uvm_pkg::*;
 `include "uvm_macros.svh"
-`include "uvm_pkg.sv"
+//`include "uvm_pkg.sv"
 
 module Top_Wrapper;
 

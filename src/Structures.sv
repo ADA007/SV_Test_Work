@@ -1,7 +1,8 @@
 
 
-`include "uvm_pkg.sv"
+//`include "uvm_pkg.sv"
 import uvm_pkg::*;
+`include "uvm_macros.svh"
 
 package struct_pkg;
 
@@ -9,7 +10,7 @@ class req_pkt extends uvm_sequence_item;
 	  
 		rand logic [11:0] address;
 
-		constraint address_c { address == 12'h155;}
+		//constraint address_c { address == 12'h155;}
 
 		`uvm_object_utils_begin(req_pkt)
 		   //////////////// Request Fields
@@ -29,7 +30,7 @@ class resp_pkt extends uvm_sequence_item;
 		rand int delay_time;
 
 		constraint delay_time_c { delay_time inside {[1:10]};}
-		constraint data_c { data == 24'h115511;}
+		//constraint data_c { data == 24'h115511;}
 
 		`uvm_object_utils_begin(resp_pkt)
 		   //////////////// Response Fields
