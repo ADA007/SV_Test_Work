@@ -13,6 +13,7 @@ class a_driver extends uvm_driver;
     virtual A_B_req_if A_B_req_if_vi;
 
     req_pkt req_pk = new();
+    int transaction_num;
 
     function new(string name, uvm_component parent);
       super.new(name, parent);
@@ -40,19 +41,21 @@ class a_driver extends uvm_driver;
     endtask : make_transaction
 
     task run_phase(uvm_phase phase);
+
         @(posedge A_B_req_if_vi.clk);
         reset_outputs();
         @(posedge A_B_req_if_vi.clk);
-        //make_transaction(12'h555);
-        repeat (5) begin
+
+        forever begin
             if (!req_pk.randomize() ) begin //Data randomisation
                 `uvm_warning("RNDFLD", "Randomization failed for req_pk")
             end
             make_transaction(req_pk);
+            transaction_num = transaction_num + 1;
             //make_transaction(12'b00010101010Z);
             repeat(20) @(posedge A_B_req_if_vi.clk); // Wait 20 cycles of clock before next request
         end
-        $finish;
+        
     endtask: run_phase
 
 endclass : a_driver
