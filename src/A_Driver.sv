@@ -5,15 +5,14 @@ import uvm_pkg::*;
 `include "uvm_macros.svh"
 import struct_pkg::*;
 
-class a_driver extends uvm_driver;
+class a_driver extends uvm_driver #(req_pkt);
 
     `uvm_component_utils(a_driver)
 
     // A_B_req_if Interface (A_Driver side)
     virtual A_B_req_if A_B_req_if_vi;
 
-    req_pkt req_pk = new();
-    int transaction_num;
+    //req_pkt req_pk = new();
 
     function new(string name, uvm_component parent);
       super.new(name, parent);
@@ -42,18 +41,22 @@ class a_driver extends uvm_driver;
 
     task run_phase(uvm_phase phase);
 
+        req_pkt req_pk;
+
         @(posedge A_B_req_if_vi.clk);
         reset_outputs();
         @(posedge A_B_req_if_vi.clk);
 
-        forever begin
-            if (!req_pk.randomize() ) begin //Data randomisation
-                `uvm_warning("RNDFLD", "Randomization failed for req_pk")
-            end
-            make_transaction(req_pk);
-            transaction_num = transaction_num + 1;
-            //make_transaction(12'b00010101010Z);
-            repeat(20) @(posedge A_B_req_if_vi.clk); // Wait 20 cycles of clock before next request
+        while (1) begin
+
+           seq_item_port.get_next_item(req);
+ 
+           `uvm_info( "A_DRIVER", $sformatf(" Make transaction to address = 0x%0h \n", req.address), UVM_LOW );
+           make_transaction(req);
+           repeat(10) @(posedge A_B_req_if_vi.clk); // Wait 20 cycles of clock before next request
+ 
+           seq_item_port.item_done();
+
         end
         
     endtask: run_phase

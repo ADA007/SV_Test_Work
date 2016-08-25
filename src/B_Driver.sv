@@ -36,6 +36,7 @@ class b_driver extends uvm_driver #(resp_pkt);
         `uvm_info( "B_DRIVER", $sformatf(" Drive_if with data = 0x%0h with delay = %0d \n", resp_pkt_fields.data, resp_pkt_fields.delay_time), UVM_LOW );
 
         repeat(resp_pkt_fields.delay_time) @A_B_req_if_vi.clocking_block_drv_b; //Wait random cycle number before response
+        
         A_B_req_if_vi.clocking_block_drv_b.Valid_Data <= 1;
         A_B_req_if_vi.clocking_block_drv_b.Data <= resp_pkt_fields.data;
         repeat(1) @A_B_req_if_vi.clocking_block_drv_b;
