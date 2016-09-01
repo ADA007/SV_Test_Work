@@ -4,10 +4,11 @@ interface A_B_req_if(input bit clk);
   // signals definitions
   logic Valid_Addr, Valid_Data;
   logic [11:0] Address;
+  logic [3:0] Length;
   logic [23:0] Data;
 
   clocking clocking_block_drv_a @(posedge clk); 
-      output Valid_Addr, Address; //sync interface with clock
+      output Valid_Addr, Address, Length; //sync interface with clock
   endclocking
 
   clocking clocking_block_drv_b @(posedge clk); 
@@ -15,7 +16,7 @@ interface A_B_req_if(input bit clk);
   endclocking
 
   clocking clocking_block_mon @(negedge clk); 
-      input Valid_Addr, Address; //sync interface with clock
+      input Valid_Addr, Address, Length; //sync interface with clock
   endclocking
 
   //modport DUT_A ( clocking clocking_block_drv );

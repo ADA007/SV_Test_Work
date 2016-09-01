@@ -32,12 +32,14 @@ class b_monitor extends uvm_monitor;
 
             // Wait for valid address
             @(posedge A_B_mon_if_vi.clocking_block_mon.Valid_Addr);
-            `uvm_info( "MONITOR", $sformatf(" Monitor caught transaction. 0x%0h\n", A_B_mon_if_vi.clocking_block_mon.Address), UVM_LOW );
+            `uvm_info( "MONITOR", $sformatf(" Monitor caught transaction. address =  0x%0h ,  length = 0x%0h \n", A_B_mon_if_vi.clocking_block_mon.Address, A_B_mon_if_vi.clocking_block_mon.Length), UVM_LOW );
 
             //Check data for U Z X
             if ($isunknown(A_B_mon_if_vi.clocking_block_mon.Address)) `uvm_info( "MONITOR", $sformatf(" address=%b has x's \n", A_B_mon_if_vi.clocking_block_mon.Address), UVM_LOW );
+            if ($isunknown(A_B_mon_if_vi.clocking_block_mon.Length)) `uvm_info( "MONITOR", $sformatf(" address=%b has x's \n", A_B_mon_if_vi.clocking_block_mon.Length), UVM_LOW );
             
             req_packet.address = A_B_mon_if_vi.clocking_block_mon.Address;
+            req_packet.pkt_len = A_B_mon_if_vi.clocking_block_mon.Length;
 
             //Send data in to Analysis Port
             b_side_analysis_port.write(req_packet);

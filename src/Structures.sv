@@ -8,9 +8,19 @@ package struct_pkg;
 
 class req_pkt extends uvm_sequence_item;
 	  
-		rand logic [11:0] address;
+		typedef enum bit [1:0] {PKT_SHORT, PKT_MIDDLE, PKT_LONG} pkt_kind_t;
 
-		//constraint address_c { address == 12'h155;}
+		rand logic [11:0] address;
+		rand logic [3:0] pkt_len;
+		rand pkt_kind_t pkt_kind;
+
+		constraint address_c { address > 12'd15;} //make 4 little bits zero's only
+		constraint pkt_len_c { 
+			pkt_len > 1; // addition condition if it happens accidentally
+			if (pkt_kind == PKT_SHORT) { pkt_len inside {[2:3]}; }
+			else if (pkt_kind == PKT_MIDDLE) { pkt_len inside {[4:7]}; }
+			else { pkt_len inside {[8:15]}; }
+		}
 
 		`uvm_object_utils_begin(req_pkt)
 		   //////////////// Request Fields

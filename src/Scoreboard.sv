@@ -18,7 +18,7 @@ class scoreboard extends uvm_scoreboard;
   
   function void write (req_pkt pkt);
     internal_state = pkt;
-    `uvm_info( "SCOREBOARD", $sformatf(" Transaction. 0x%0h\n", internal_state.address), UVM_LOW );
+    `uvm_info( "SCOREBOARD", $sformatf(" Transaction. address = 0x%0h, length = 0x%0h \n", internal_state.address, internal_state.pkt_len), UVM_LOW );
   endfunction
 
 endclass: scoreboard

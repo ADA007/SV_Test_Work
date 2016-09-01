@@ -28,12 +28,14 @@ class a_driver extends uvm_driver #(req_pkt);
         `uvm_info( "A_DRIVER", " Reset_if.\n", UVM_LOW );
         A_B_req_if_vi.clocking_block_drv_a.Valid_Addr <= 0;
         A_B_req_if_vi.clocking_block_drv_a.Address <= 0;
+        A_B_req_if_vi.clocking_block_drv_a.Length <= 0;
     endtask : reset_outputs
 
     task make_transaction (req_pkt req_pkt_fields);
-        `uvm_info( "A_DRIVER", $sformatf(" Drive_if with data = 0x%0h \n", req_pkt_fields.address), UVM_LOW );
+        `uvm_info( "A_DRIVER", $sformatf(" Drive_if with address = 0x%0h, length = 0x%0h \n", req_pkt_fields.address, req_pkt_fields.pkt_len), UVM_LOW );
         A_B_req_if_vi.clocking_block_drv_a.Valid_Addr <= 1;
         A_B_req_if_vi.clocking_block_drv_a.Address <= req_pkt_fields.address;
+        A_B_req_if_vi.clocking_block_drv_a.Length <= req_pkt_fields.pkt_len;
         repeat(2) @A_B_req_if_vi.clocking_block_drv_a;
         reset_outputs();
 
@@ -51,7 +53,7 @@ class a_driver extends uvm_driver #(req_pkt);
 
            seq_item_port.get_next_item(req);
  
-           `uvm_info( "A_DRIVER", $sformatf(" Make transaction to address = 0x%0h \n", req.address), UVM_LOW );
+           `uvm_info( "A_DRIVER", $sformatf(" Make transaction to address = 0x%0h, length = 0x%0h, type = %s \n", req.address, req.pkt_len, req.pkt_kind.name ), UVM_LOW );
            make_transaction(req);
            repeat(10) @(posedge A_B_req_if_vi.clk); // Wait 20 cycles of clock before next request
  
