@@ -30,7 +30,7 @@ class a_sequence extends uvm_sequence #(req_pkt);
          req_pk = req_pkt::type_id::create("req_pk",,get_full_name() );
 
          start_item(req_pk);
-            
+            //for (int i = 0; i < 10; i++)
             if (!req_pk.randomize() ) begin 
               `uvm_warning("RNDFLD", "Randomization failed for req_pkt")
             end

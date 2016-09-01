@@ -14,7 +14,7 @@ class req_pkt extends uvm_sequence_item;
 		rand logic [3:0] pkt_len;
 		rand pkt_kind_t pkt_kind;
 
-		constraint address_c { address > 12'd15;} //make 4 little bits zero's only
+		constraint address_c { address[3:0] == 0;} //make 4 little bits zero's only
 		constraint pkt_kind_c {
 			pkt_kind dist { PKT_SHORT, PKT_MIDDLE := 3, PKT_LONG}; // Weights of items := {1, 3, 1 }
 		}
@@ -36,6 +36,12 @@ class req_pkt extends uvm_sequence_item;
 		function new(string name= "req_pkt");
          super.new(name);
         endfunction
+
+        //function void post_randomize();
+ 	    //   begin
+ 	    //    $write("post_randomize : Value of address %b \n",address);
+ 	    //  end
+ 	    //endfunction
 
 endclass
 
