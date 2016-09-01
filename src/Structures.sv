@@ -15,6 +15,9 @@ class req_pkt extends uvm_sequence_item;
 		rand pkt_kind_t pkt_kind;
 
 		constraint address_c { address > 12'd15;} //make 4 little bits zero's only
+		constraint pkt_kind_c {
+			pkt_kind dist { PKT_SHORT, PKT_MIDDLE := 3, PKT_LONG}; // Weights of items := {1, 3, 1 }
+		}
 		constraint pkt_len_c { 
 			pkt_len > 1; // addition condition if it happens accidentally
 			if (pkt_kind == PKT_SHORT) { pkt_len inside {[2:3]}; }
