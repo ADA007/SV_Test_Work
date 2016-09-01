@@ -25,6 +25,8 @@ class req_pkt extends uvm_sequence_item;
 		`uvm_object_utils_begin(req_pkt)
 		   //////////////// Request Fields
 		  `uvm_field_int( address, UVM_ALL_ON | UVM_NOPACK );
+		  `uvm_field_int( pkt_len, UVM_ALL_ON | UVM_NOPACK );
+		  `uvm_field_enum( pkt_kind_t, pkt_kind, UVM_ALL_ON | UVM_NOPACK );
 
 		`uvm_object_utils_end
 
